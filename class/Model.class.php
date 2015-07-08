@@ -81,11 +81,11 @@ abstract class Model {
 	}
 
 	private static function _getList($result) {
-		$recipes = array();
-		foreach($result as $recipe) {
-			$recipes[] = new Recipe($recipe);
+		$items = array();
+		foreach($result as $item) {
+			$items[] = new self($item);
 		}
-		return $recipes;
+		return $items;
 	}
 
 }
