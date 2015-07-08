@@ -45,6 +45,10 @@ abstract class Model {
 		return new $entity($query->fetch());
 	}
 
+	public static function getRandom() {
+		return self::getList('*', '', array(), 'RAND()', 3);
+	}
+
 	public static function getList($select = '*', $from = '', $where = array(), $order = '', $limit = 0) {
 
 		$sql  = 'SELECT '.$select;
@@ -56,7 +60,7 @@ abstract class Model {
 			$operator = $params[0];
 			$value = $params[1];
 
-			$sql .= ' AND '.$key.' '.$operator.' '.$value;
+			$sql .= ' AND '.$key.' '.$operator.' :'.$key;
 			$bindings[$key] = $value;
 		}
 
@@ -81,9 +85,10 @@ abstract class Model {
 	}
 
 	private static function _getList($result) {
+		$entity = get_called_class();
 		$items = array();
 		foreach($result as $item) {
-			$items[] = new self($item);
+			$items[] = new $entity($item);
 		}
 		return $items;
 	}

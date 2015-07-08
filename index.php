@@ -1,6 +1,8 @@
 <?php
-include_once 'partials/header.php';
+include_once 'config/config.conf.php';
+$recipes = Recipe::getList('SELECT * FROM recipe');
 
+include_once 'partials/header.php';
 ?>
 		<div class="row">
 			<div class="col-lg-4">
@@ -24,6 +26,36 @@ include_once 'partials/header.php';
 		</div><!-- /.row -->
 
 		<hr class="featurette-divider">
+<?php
+	$i = 0;
+	foreach($recipes as $recipe):
+		$i++;
+		$one = $i%2==0 ? '5' : '7';
+		$two = $i%2==0 ? '7' : '5';
+		echo ($i%2==0);
+?>
+		<div class="row featurette">
+			<div class="col-md-<?= $one ?>">
+				<h2 class="featurette-heading"><?= $recipe->title ?></h2>
+				<p class="lead"><?= Utils::cutString($recipe->content, 200) ?></p>
+				<a class="btn btn-primary" href="recipe.php?id=<?= $recipe->id ?>" role="button">Voir la recette &raquo;</a>
+			</div>
+			<div class="col-md-<?= $two ?>">
+				<img class="featurette-image img-responsive center-block" src="img/<?= $recipe->picture ?>" height="333" width="500" alt="">
+			</div>
+		</div>
+<?php endforeach; ?>
+
+		<!--<div class="row featurette">
+			<div class="col-md-5">
+				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
+			</div>
+			<div class="col-md-7">
+				<h2 class="featurette-heading">Recipe title</h2>
+				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
+				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
+			</div>
+		</div>
 
 		<div class="row featurette">
 			<div class="col-md-7">
@@ -34,28 +66,6 @@ include_once 'partials/header.php';
 			<div class="col-md-5">
 				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
 			</div>
-		</div>
-
-		<div class="row featurette">
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
-			</div>
-			<div class="col-md-7">
-				<h2 class="featurette-heading">Recipe title</h2>
-				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
-				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
-			</div>
-		</div>
-
-		<div class="row featurette">
-			<div class="col-md-7">
-				<h2 class="featurette-heading">Recipe title</h2>
-				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
-				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
-			</div>
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
-			</div>
-		</div>
+		</div>-->
 
 <?php include_once 'partials/footer.php'; ?>

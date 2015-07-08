@@ -1,6 +1,9 @@
 <?php
-include_once 'partials/header.php';
+include_once 'config/config.conf.php';
+$recipes = Recipe::getList('SELECT * FROM recipe');
 
+
+include_once 'partials/header.php';
 ?>
 
 		<h1>Les recettes de [RECIPE_TYPE]</h1>
@@ -8,50 +11,24 @@ include_once 'partials/header.php';
 
 		<hr>
 
+<?php foreach($recipes as $recipe): ?>
+
 		<div class="media">
 			<div class="media-left">
 				<a href="#">
-					<img class="media-object" src="img/recipe.png" width="100" height="100" alt="...">
+					<img class="media-object" src="img/<?= $recipe->picture ?>" width="100" height="100" alt="...">
 				</a>
 			</div>
 			<div class="media-body">
-				<h4 class="media-heading">Recipe title</h4>
+				<h4 class="media-heading"><?= $recipe->title ?></h4>
 				<blockquote>
-					Sed faucibus mauris at nisl auctor, quis tempus nunc tristique. Proin non lacus sed arcu eleifend interdum. Ut sodales neque at convallis congue... <a href="recipe.php">Voir la recette</a>
+					<?= Utils::cutString( $recipe->content, 500) ?><br>
+					<a href="recipe.php?id=<?= $recipe->id ?>">Voir la recette</a>
 				</blockquote>
 			</div>
 		</div>
 
 		<hr>
-
-		<div class="media">
-			<div class="media-left">
-				<a href="#">
-					<img class="media-object" src="img/recipe.png" width="100" height="100" alt="...">
-				</a>
-			</div>
-			<div class="media-body">
-				<h4 class="media-heading">Recipe title</h4>
-				<blockquote>
-					Sed faucibus mauris at nisl auctor, quis tempus nunc tristique. Proin non lacus sed arcu eleifend interdum. Ut sodales neque at convallis congue... <a href="recipe.php">Voir la recette</a>
-				</blockquote>
-			</div>
-		</div>
-
-		<hr>
-
-		<div class="media">
-			<div class="media-left">
-				<a href="#">
-					<img class="media-object" src="img/recipe.png" width="100" height="100" alt="...">
-				</a>
-			</div>
-			<div class="media-body">
-				<h4 class="media-heading">Recipe title</h4>
-				<blockquote>
-					Sed faucibus mauris at nisl auctor, quis tempus nunc tristique. Proin non lacus sed arcu eleifend interdum. Ut sodales neque at convallis congue... <a href="recipe.php">Voir la recette</a>
-				</blockquote>
-			</div>
-		</div>
+<?php endforeach; ?>
 
 <?php include_once 'partials/footer.php'; ?>
