@@ -81,9 +81,10 @@ abstract class Model {
 	}
 
 	private static function _getList($result) {
+		$entity = get_called_class();
 		$items = array();
 		foreach($result as $item) {
-			$items[] = new self($item);
+			$items[] = new $entity($item);
 		}
 		return $items;
 	}
