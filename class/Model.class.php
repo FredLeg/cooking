@@ -56,7 +56,7 @@ abstract class Model {
 			$operator = $params[0];
 			$value = $params[1];
 
-			$sql .= ' AND '.$key.' '.$operator.' '.$value;
+			$sql .= ' AND '.$key.' '.$operator.' :'.$key;
 			$bindings[$key] = $value;
 		}
 
