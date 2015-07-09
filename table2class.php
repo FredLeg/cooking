@@ -14,13 +14,11 @@ if(empty($_GET['table'])) {
 }
 ###############################################################################
 ###############################################################################
-//define ('P',PHP_EOL);
 define ('¶',PHP_EOL);  // Alt+0182
 $table_name = $_GET['table'];      // Nom de la table pour laquelle on veut une class
 $nos        = isset($_GET['nos']); // Pour "no S": Supprime le s du nom de la class
 $class_name = $nos ? substr($table_name,0,strlen($table_name)-1) : $table_name;
 $class_name = ucfirst($class_name);
-function tab($n){return str_repeat("\t",$n);}
 function getCamelCase($str) {
 	return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
 }
