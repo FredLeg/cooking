@@ -3,7 +3,8 @@ require_once 'config/config.conf.php';
 ###############################################################################
 #########################  Utilisation  #######################################
 if(empty($_GET['table'])) {
-	echo "Paramètre /?table=recipe".'<br>';
+	header('Content-Type: text/html; charset=utf-8');
+	echo "Paramètre: ?table=recipe".'<br>';
 	echo "table: Nom de la table pour laquelle on veut une class".'<br>';
 	echo "&nos: Supprime le s du nom de la class".'<br>';
 	echo "Utilise:".'<br>';
@@ -17,8 +18,7 @@ if(empty($_GET['table'])) {
 define ('¶',PHP_EOL);  // Alt+0182
 $table_name = $_GET['table'];      // Nom de la table pour laquelle on veut une class
 $nos        = isset($_GET['nos']); // Pour "no S": Supprime le s du nom de la class
-$class_name = $nos ? substr($table_name,0,strlen($table_name)-1) : $table_name;
-$class_name = ucfirst($class_name);
+$class_name = ucfirst($nos ? substr($table_name,0,strlen($table_name)-1) : $table_name);
 function getCamelCase($str) {
 	return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
 }
@@ -38,8 +38,40 @@ foreach( $posts as $post ) {
 	}
 }
 ###############################################################################
-echo '<xmp>'.¶;
-echo '<?php'.¶;
+// "^(((float|decimal|double)(\\([[:digit:]]+,[[:digit:]]+\\))?))$"
+/*
+SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE FROM information_schema.columns;
+DATA_TYPE returns - decimal
+COLUMN_TYPE returns - decimal(5,2)
+*/
+$txt = [ 'int(11)', 'int' ];
+$motif = "/
+    ([a-zA-Z\s]+)  # tout caractère entre a-z et A-Z et espaces blancs, au moins une fois
+    \(             # parenthèse ouvrante
+/x";
+foreach($txt as $str){
+	$arr = explode ('(', $str);
+	//preg_match ($motif , $arr[0], $matches);
+	echo '<b>'.$str.'</b> '.$arr[0].'<br>';
+}
+###############################################################################
+echo <<<EOF
+<pre class="prettyprint lang-php">
+	Publishing:commit/stash/push
+	git commit -m "message"	Commit the local changes that were staged
+	git commit -am "message"	Stage files (modified and deleted, not new) and commit
+	git stash	Take the uncommitted work (modified tracked files and staged changes) and saves it
+	git stash list	Show list of stashes
+	git stash apply	Reapply the latest stashed contents
+	git stash apply <stash id>	Reapply a specific stash. (stash id = stash@{2})
+	git stash drop <stash id>	Drop a specific stash
+	git push	Push your changes to the origin
+	git push origin <local branch name>	Push a branch to the origin
+	git tag <tag name>	Tag a version (ie v1.0). Useful for Github releases.
+</pre>
+EOF;
+echo '<pre class="prettyprint lang-php">';
+//echo '<?php'.¶;
 echo 'class '.$class_name.' {'.¶;
 echo ¶;
 echo '	############ Attributs'.¶;
@@ -154,8 +186,9 @@ echo '	}'.¶;
 	}
 }
 echo '	public function __toString() {'.¶;
-echo '		return \'<pre>\'.print_r($this, true).\'</pre>\';'.¶;
+echo '		return $this;'.¶;
 echo '	}'.¶;
 echo '}'.¶;
-echo '</xmp>'.¶;
+echo '</pre>'.¶;
+echo '<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>'.¶;
 ###############################################################################
