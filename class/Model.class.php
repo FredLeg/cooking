@@ -1,8 +1,6 @@
 <?php
 abstract class Model {
 
-	protected $id;
-
 	// Par défaut on défini l'argument $data facultatif et vide par défaut, ce qui permet de continuer à instancier l'objet avec new Movie() en utilisant les setters manuellement
     public function __construct($data = array())    {
 
@@ -21,7 +19,7 @@ abstract class Model {
     }
 
     public function __set($key, $value) {
-		$method = Utils::getCamelCase('set'.ucfirst($key)); // Ex: setTitle
+			$method = Utils::getCamelCase('set'.ucfirst($key)); // Ex: setTitle
 		if (method_exists($this, $method)) {
 			$this->$method($value);
 		}
@@ -36,13 +34,12 @@ abstract class Model {
 
 	public static function get($id) {
 		$entity = get_called_class();
-		$query = Db::getInstance()->prepare('SELECT * FROM '.$entity.' WHERE id = :id');
-		$query->bindValue('id', $id, PDO::PARAM_INT);
-		$query->execute();
-		if ($query->rowCount() == 0) {
+
+		$result = Db::selectOne('SELECT * FROM '.$entity.' WHERE id = :id', array('id' => $id));
+		if (count($result) == 0) {
 			throw new Exception(ucfirst($entity).' not found from db with id = '.$id);
 		}
-		return new $entity($query->fetch());
+		return new $entity($result);
 	}
 
 	public static function getList($select = '*', $from = '', $where = array(), $order = '', $limit = 0) {
@@ -69,13 +66,7 @@ abstract class Model {
 			$bindings['limit'] = $limit;
 		}
 
-		$query = Db::getInstance()->prepare($sql);
-		foreach($bindings as $key => $value) {
-			$type = is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-			$query->bindValue($key, $value, $type);
-		}
-		$query->execute();
-		$result = $query->fetchAll();
+		$result = Db::select($sql, $bindings);
 
 		return self::_getList($result);
 	}
@@ -89,4 +80,15 @@ abstract class Model {
 		return $items;
 	}
 
+	public static function select($sql, $bindings = array()) {
+		return self::_getList(Db::select($sql, $bindings));
+	}
+	public static function selectOne($sql, $bindings = array()) {
+		$entity = get_called_class();
+		return new static(Db::selectOne($sql, $bindings));
+	}
+
+	public function __toString() {
+		return '<pre>'.print_r($this, true).'</pre>';
+	}
 }

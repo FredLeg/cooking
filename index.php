@@ -1,6 +1,8 @@
 <?php
 include_once 'partials/header.php';
 
+//$random_recipes = Recipe::getList('*', '', array(), 'RAND()', 3);
+$random_recipes = Recipe::select('SELECT * FROM recipe ORDER BY RAND() LIMIT 3');
 ?>
 		<div class="row">
 			<div class="col-lg-4">
@@ -25,37 +27,13 @@ include_once 'partials/header.php';
 
 		<hr class="featurette-divider">
 
+		<?php
+		$i = 0;
+		foreach($random_recipes as $recipe) {
+		?>
 		<div class="row featurette">
-			<div class="col-md-7">
-				<h2 class="featurette-heading">Recipe title</h2>
-				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
-				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
-			</div>
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
-			</div>
+			<?= Recipe::displayHomeBlock($recipe, $i++); ?>
 		</div>
-
-		<div class="row featurette">
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
-			</div>
-			<div class="col-md-7">
-				<h2 class="featurette-heading">Recipe title</h2>
-				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
-				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
-			</div>
-		</div>
-
-		<div class="row featurette">
-			<div class="col-md-7">
-				<h2 class="featurette-heading">Recipe title</h2>
-				<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in felis magna. Donec arcu ipsum, commodo non sollicitudin at, ultrices sit amet metus. </p>
-				<a class="btn btn-primary" href="recipe.php" role="button">Voir la recette &raquo;</a>
-			</div>
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/recipe.png" height="333" width="500" alt="">
-			</div>
-		</div>
+		<?php }	?>
 
 <?php include_once 'partials/footer.php'; ?>
