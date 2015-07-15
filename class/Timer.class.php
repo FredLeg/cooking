@@ -19,11 +19,11 @@ class Timer {
 		return $this->time();
 	}
 	public function time(){
-		return format($this->_stop - $this->_start);
+		return self::format($this->_stop - $this->_start);
 	}
 	public static function pageLoad(){
 		$time = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-		return format($time);
+		return self::format($time);
 		echo "Création de page en ".Timer::pageLoad()." seconde";
 	}
 	public static function format($time){
