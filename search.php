@@ -1,6 +1,44 @@
 <?php
 include_once 'config/config.conf.php';
 
+$count      = 0; // nombre de produits trouvés
+$sep        = '/[\s,]+/'; // séparateur de keywords: n'importe quels espaces et la virgule
+
+// Valeurs par défaut du formulaire
+$keywords  = [];
+$recipe    = '';
+$price_min = 20;  //
+$price_max = 80;  // Parceque c'est'c'que ch'fais dans la vie
+$picture   = '0';
+$sort      = 'name';
+$direction = 'ASC';
+
+//Types de recherches
+$recherche_rapide  = !empty( $_GET['search']);
+$recherche_avancee = isset(  $_GET['type']);
+
+
+if ( $recherche_rapide ) {
+
+	$keywords = preg_split($sep, $_GET['search'] );
+	$sql_keys = '';
+	foreach($keywords as $key) $sql_keys .= ' AND CONCAT(title,ingredients,content) LIKE \'%'.$key.'%\' ';
+	$sql = 'SELECT * FROM recipe WHERE TRUE '
+	      .$sql_keys.' ORDER BY title';
+	/*Utils::debug($keywords);*/
+	/*echo '<pre>'.$sql.'</pre>';*/
+	// Résultat de recherche rapide
+	$recipes  = Recipe::getList( $sql );
+	$count    = count($recipes);
+	/*Utils::debug( $recipes );*/
+}
+
+
+$on_a_trouve_des_produits = $count > 0;
+
+
+
+
 include_once 'partials/header.php';
 ?>
 		<h1>Recherche</h1>
@@ -13,7 +51,7 @@ include_once 'partials/header.php';
 
 			<div class="form-group">
 				<label for="recipe">Nom de recette</label>
-				<input type="text" id="recipe" name="recipe" class="form-control" placeholder="Tarte à la framboise" value="">
+				<input type="text" id="recipe" name="recipe" class="form-control" placeholder="Tarte à la framboise" value="<?= $recipe ?>">
 			</div>
 
 			<div class="form-group">
@@ -41,4 +79,11 @@ include_once 'partials/header.php';
 		</form>
 
 <?php
+		if ( $on_a_trouve_des_produits ) {
+
+            foreach($recipes as $recipe) {
+                echo $recipe->title.'<br/>';
+            }
+        }
+
 include_once 'partials/footer.php';
