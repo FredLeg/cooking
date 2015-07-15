@@ -79,8 +79,8 @@ HEAD	Tree that represents the last commit.<br/>
 <b>git branch</b>	Show all branches (local)<br/>
 <b>git branch -a</b>	Show all branches (local and remote)<br/>
 <b>git branch -r</b>	Show remote branches<br/>
-<b>git branch (branch_name)</b>	Create a branch from HEAD<br/>
-<b>git checkout -b (branch_name)</b>	Create a new branch and switch to it<br/>
+<b>git branch (branch_name)</b>	Create a branch (from HEAD)<br/>
+<b>git checkout -b (branch_name)</b>	Create a new branch (from HEAD) and switch to it<br/>
 <b>git checkout (branch_name)</b>	Switch to an already created branch<br/>
 <b>git push origin (branch_name)</b>	Push a branch up to the origin (Github)<br/>
 <b>git checkout -b (new_branch_name) origin/(branch_name)</b>	Get a remote branch from origin into a local branch (naming the branch and switching to it)<br/>

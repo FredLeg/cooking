@@ -1,6 +1,6 @@
 <?php
 include_once 'config/config.conf.php';
-$recipe     = Recipe::get( $_GET['id'] ); // <<<<<<<<<<<<<<<
+$recipe     = Recipe::getRandom( 'SELECT * FROM recipe ORDER BY RAND() LIMIT 1' );
 
 include_once 'partials/header.php';
 

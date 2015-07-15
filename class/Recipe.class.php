@@ -55,6 +55,11 @@ class Recipe {
 		return $response;
 	}
 
+	public static function getRandom($sql) {
+		$posts = self::getList($sql);
+		return $posts[0];
+	}
+
 	############ Getters
 
 	public function getId(){;
