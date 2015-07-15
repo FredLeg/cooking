@@ -9,8 +9,13 @@ $recipe     = Recipe::get( $_GET['id'] );
 include_once 'partials/header.php';
 
 
+
+
 /*
-echo '('.empty($recipe->picture).') '.gettype($recipe->picture).': '.$recipe->picture.'<br/>';
+$picture = $recipe->picture;
+$test = empty($picture);
+
+echo '('.var_export($test, true).') '.gettype($recipe->picture).': '.$recipe->picture.'<br/>';
 $a = '';
 $b = 'hello';
 echo empty($a).'<br/>';

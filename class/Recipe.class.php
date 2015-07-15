@@ -62,13 +62,13 @@ class Recipe {
 
 	############ Getters
 
-	public function getId(){;
+	public function getId(){
 		return $this->id;
 	}
-	public function getType(){;
+	public function getType(){
 		return $this->type;
 	}
-	public function getTitle(){;
+	public function getTitle(){
 		return $this->title;
 	}
 	public function getIngredients() {
@@ -77,7 +77,7 @@ class Recipe {
 	public function getContent() {
 		return nl2br(htmlspecialchars($this->content));
 	}
-	public function getPicture(){;
+	public function getPicture(){
 		return $this->picture;
 	}
 	public function getDate($format = 'd-m-Y H:i:s') {
