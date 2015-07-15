@@ -1,8 +1,8 @@
 <?php
-include_once 'config/config.conf.php';
-$recipes    = Recipe::getList('SELECT * FROM recipe');
-
 include_once 'partials/header.php';
+
+//$random_recipes = Recipe::getList('*', '', array(), 'RAND()', 3);
+$random_recipes = Recipe::select('SELECT * FROM recipe ORDER BY RAND() LIMIT 3');
 ?>
 		<div class="row">
 			<?php
@@ -19,31 +19,15 @@ include_once 'partials/header.php';
 			?>
 		</div><!-- /.row -->
 		<hr class="featurette-divider">
-<?php
-		function one(){
-			global $recipe;
-			?>
-			<div class="col-md-7">
-				<h2 class="featurette-heading"><?= $recipe->title ?></h2>
-				<p class="lead"><?= Utils::cutString($recipe->content, 200) ?></p>
-				<a class="btn btn-primary" href="recipe.php?id=<?= $recipe->id ?>" role="button">Voir la recette &raquo;</a>
-			</div>
-			<?php
-		}
-		function two(){
-			global $recipe;
-			?>
-			<div class="col-md-5">
-				<img class="featurette-image img-responsive center-block" src="img/<?= $recipe->picture ?>" height="333" width="500" alt="">
-			</div>
-			<?php
-		}
-		foreach($recipes as $index => $recipe):
-			?>
-			<div class="row featurette">
-				<?= $index%2==0 ? one().two() : two().one(); ?>
-			</div>
-			<?php
-		endforeach;
+		<?php
+		$i = 0;
+		foreach($random_recipes as $recipe) {
+		?>
+		<div class="row featurette">
+			<?= Recipe::displayHomeBlock($recipe, $i++); ?>
+		</div>
+		<?php }	?>
 
+<?php
 include_once 'partials/footer.php';
+?>

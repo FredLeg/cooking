@@ -1,120 +1,104 @@
 <?php
-class Recipe {
+class Recipe extends Model {
 
-	############ Attributs
+	public $id;
+	public $type;
+	public $title;
+	public $ingredients;
+	public $content;
+	public $picture;
+	public $date;
 
-	private $id;            // Type:int(11), Null:NO, Key:PRI, Extra:auto_increment,
-	private $type;          // Type:tinyint(2), Null:NO,
-	private $title;         // Type:varchar(100), Null:NO,
-	private $ingredients;   // Type:text, Null:NO,
-	private $content;       // Type:text, Null:NO,
-	private $picture;       // Type:varchar(100), Null:YES,
-	private $date;          // Type:datetime, Null:YES,
-
-	############ Magique
-
-	public function __construct($data = array())    {
-		foreach ($data as $key => $value) {
-			$method = Utils::getCamelCase('set'.ucfirst($key));
-			if (method_exists($this, $method)) {
-				$this->$method($value);
-			}
+	/* Setters */
+	public function setId($id) {
+		if (!is_numeric($id) || $id < 0) {
+			throw new Exception('Recipe id must be a number > 0');
 		}
-	}
-	public function __set($key, $value) {
-		$method = Utils::getCamelCase('set'.ucfirst($key));
-		if (method_exists($this, $method)) {
-			$this->$method($value);
-		}
-	}
-	public function __get($key) {
-		$method = Utils::getCamelCase('get'.ucfirst($key));
-		if (method_exists($this, $method)) {
-			return $this->$method();
-		}
-	}
-
-	############ Utils
-
-	public static function get($id) {
-		if (empty($id))	{
-			return false;
-		}
-		$query = Db::getInstance()->prepare('SELECT * FROM recipe WHERE id = :id');
-		$query->bindValue('id', $id, PDO::PARAM_INT);
-		$query->execute();
-		return new self($query->fetch());
-	}
-
-	public static function getList($sql) {
-		$result   = Db::getInstance()->query($sql)->fetchAll();
-		$response = array();
-		foreach($result as $item) {
-			$response[] = new self($item);
-		}
-		return $response;
-	}
-
-	############ Getters
-
-	public function getId(){;
-		return $this->id;
-	}
-	public function getType(){;
-		return $this->type;
-	}
-	public function getTitle(){;
-		return $this->title;
-	}
-	public function getIngredients() {
-		return nl2br(htmlspecialchars($this->ingredients));
-	}
-	public function getContent() {
-		return nl2br(htmlspecialchars($this->content));
-	}
-	public function getPicture(){;
-		return $this->picture;
-	}
-	public function getDate($format = 'd-m-Y H:i:s') {
-		if (empty($format)) {
-			$format = 'Y-m-d H:i:s';
-		}
-		return date($format, strtotime($this->date));
-	}
-
-	############ Setters
-
-	public function setId($id){
 		$this->id = $id;
 	}
-	public function setType($type){
+	public function setType($type) {
+		if (!is_numeric($type) || $type < 0 || $type > 99) {
+			throw new Exception('Recipe type must be a number between 0 and 99');
+		}
 		$this->type = $type;
 	}
-	public function setTitle($title){
+	public function setTitle($title) {
+		if (empty($title) || !is_string($title) || strlen($title) > 100) {
+			throw new Exception('Recipe title must be a string and 100 chars max');
+		}
 		$this->title = $title;
 	}
 	public function setIngredients($ingredients) {
-		if (empty($ingredients) || strlen($ingredients) > 65536) {
-			throw new Exception("Content cannot be empty and 65536 length max");
+		if (!is_string($ingredients) && strlen($ingredients) >  65536) {
+			throw new Exception('Recipe ingredients must be a string and 65536 chars max');
 		}
 		$this->ingredients = $ingredients;
 	}
 	public function setContent($content) {
-		if (empty($content) || strlen($content) > 65536) {
-			throw new Exception("Content cannot be empty and 65536 length max");
+		if (!is_string($content) && strlen($content) >  65536) {
+			throw new Exception('Recipe content must be a string and 65536 chars max');
 		}
 		$this->content = $content;
 	}
-	public function setPicture($picture){
+	public function setPicture($picture) {
+		if (!is_string($picture) || strlen($picture) > 100) {
+			throw new Exception('Recipe picture must be a string and 100 chars max');
+		}
 		$this->picture = $picture;
 	}
 	public function setDate($date) {
 		if (strtotime($date) === false) {
-			throw new Exception("Creation date must be valid");
+			throw new Exception('Recipe date format must be Y-m-d H:i:s');
 		}
 		$this->date = $date;
 	}
-	public function __toString() {
-		return '<pre>'.print_r($this, true).'</pre>';
+
+	/* Getters */
+	public function getId() {
+		return $this->id;
 	}
+	public function getType() {
+		return $this->type;
+	}
+	public function getTitle() {
+		return ucfirst($this->title);
+	}
+	public function getIngredients() {
+		return nl2br($this->ingredients);
+	}
+	public function getContent($max_length = 0, $end = '...') {
+		return nl2br(Utils::cutString($this->content, $max_length, $end));
+	}
+	public function getPicture() {
+		$picture = 'img/recipe.png';
+		if (!empty($this->picture)) {
+			$path = 'img/'.$this->picture;
+			if (file_exists($path)) {
+				return $path;
+			}
+		}
+		return $picture;
+	}
+	public function getDate($format = 'Y-m-d H:i:s') {
+		return date($format, strtotime($this->date));
+	}
+
+	/* Display */
+	public static function displayHomeBlock($recipe, $i = 0) {
+
+		$first = '<div class="col-md-7">
+			<h2 class="featurette-heading">'.$recipe->getTitle().'</h2>
+			<p class="lead">
+				'.$recipe->getContent(50).'
+			</p>
+			<a class="btn btn-primary" href="recipe.php?id='.$recipe->getId().'" role="button">Voir la recette &raquo;</a>
+		</div>';
+
+		$second = '<div class="col-md-5">
+			<img class="featurette-image img-responsive center-block" src="'.$recipe->getPicture().'" height="333" width="500" alt="">
+		</div>';
+
+		return $i % 2 === 0 ? $first.PHP_EOL.$second : $second.PHP_EOL.$first;
+	}
+
 }

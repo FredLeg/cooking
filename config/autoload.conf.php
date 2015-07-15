@@ -1,11 +1,12 @@
 <?php
 
 function class_autoload($class_name) {
-	// @FIXME
-	if (strpos($class_name, 'Facebook') !== false) {
-		return false;
-	}
-	global $root_dir;
+    // @FIXME
+    if (strpos($class_name, 'Facebook') !== false) {
+        return false;
+    }
+    global $root_dir;
+
     $class_path = $root_dir.'class/'.$class_name.'.class.php';
     if (file_exists($class_path)) {
         include $class_path;

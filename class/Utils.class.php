@@ -1,51 +1,22 @@
 <?php
-
 class Utils {
 
 	public static function getCamelCase($str) {
 		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
 	}
 
-	public static function debug($var) {
-		$type = gettype($var);
-		switch ( $type ) {
-		case 'array':
-			echo '<pre class="prettyprint lang-php">';
-			print_r($var);
-			echo '</pre>';
-		break;
-		case 'boolean':
-			echo '<pre class="prettyprint lang-php">'.$type.' {';
-			echo $var ? 'true' : 'false';
-			echo '}</pre>';
-		break;
-			echo '<pre class="prettyprint lang-php">'.$type.' {';
-			echo $var;
-			echo '}</pre>';
-		default:
-		}
-	}
 
-	/*
-		Fonction qui coupe une chaine en preservant les mots
-		et ajoute une chaine à la fin du texte
-	*/
-	public static function cutString($text, $max_length = 0, $end = '...', $sep = '[@]') {
-
-		// Si la variable $max_length est définie, supérieure à 0
-		// Et que la longueur de la chaine $text est supérieure à $ max_length
+	public static function cutString($text, $max_length = 0, $end = '...') {
+		// Si le paramètre $max_length est fourni
 		if ($max_length > 0 && strlen($text) > $max_length) {
-
-			// On insère une chaine dans le texte tous les X caractères sans couper les mots
-			$text = wordwrap($text, $max_length, $sep, true);
-			// On découpe notre chaine en plusieurs bouts répartis dans un tableau
-			$text = explode($sep, $text);
-
-			// On retour le premier element du tableau concaténé avec la chaine $end
+			// Insère un caractère | tous les X caractères
+			$text = wordwrap($text, $max_length, '|', true);
+			// On découpe la chaine sur le séparateur | et on réparti les bouts dans un tableau
+			$text = explode('|', $text);
+			// On renvoie le premier élément du tableau en concaténant le paramètre $end à la fin
 			return $text[0].$end;
 		}
-
-		// On retourne la chaine de départ telle quelle
+		// Si le paramètre $max_length n'est pas fourni on retourne la chaine telle quelle
 		return $text;
 	}
 
