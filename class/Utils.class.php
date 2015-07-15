@@ -6,6 +6,26 @@ class Utils {
 		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
 	}
 
+	public static function debug($var) {
+		$type = gettype($var);
+		switch ( $type ) {
+		case 'array':
+			echo '<pre class="prettyprint lang-php">';
+			print_r($var);
+			echo '</pre>';
+		break;
+		case 'boolean':
+			echo '<pre class="prettyprint lang-php">'.$type.' {';
+			echo $var ? 'true' : 'false';
+			echo '}</pre>';
+		break;
+			echo '<pre class="prettyprint lang-php">'.$type.' {';
+			echo $var;
+			echo '}</pre>';
+		default:
+		}
+	}
+
 	/*
 		Fonction qui coupe une chaine en preservant les mots
 		et ajoute une chaine à la fin du texte

@@ -1,3 +1,6 @@
+<?php
+$categories = Category::getList('SELECT * FROM category LIMIT 3');
+?>
 <nav class="navbar navbar-inverse navbar-static-top">
 				<div class="container">
 					<div class="navbar-header">
@@ -18,9 +21,9 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Les recettes <span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
-									<li><a href="recipes.php?type=1">Les gateaux</a></li>
-									<li><a href="recipes.php?type=2">La fast-food</a></li>
-									<li><a href="recipes.php?type=3">Les soupes</a></li>
+<?php foreach($categories as $category): ?>
+									<li><a href="recipes.php?type=<?= $category->id ?>"><?= $category->name ?></a></li>
+<?php endforeach; ?>
 								</ul>
 							</li>
 						</ul>

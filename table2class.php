@@ -1,18 +1,35 @@
 <?php
 require_once 'config/config.conf.php';
+header('Content-Type: text/html; charset=utf-8');
 ###############################################################################
-#########################  Utilisation  #######################################
+###########  Utilisation  #####################################################
 if(empty($_GET['table'])) {
-	header('Content-Type: text/html; charset=utf-8');
-	echo "Paramètre: ?table=recipe".'<br>';
+	echo 'Paramètre: <a href="'.$_SERVER['PHP_SELF'].'?table=recipe">?table=recipe</a>'.'<br>';
 	echo "table: Nom de la table pour laquelle on veut une class".'<br>';
-	echo "&nos: Supprime le s du nom de la class".'<br>';
+	echo '<a href="'.$_SERVER['PHP_SELF'].'?table=recipe&nos">&nos</a>: Supprime le s du nom de la table (ici, y\'en a pas)'.'<br>';
 	echo "Utilise:".'<br>';
 	echo " - Utils::getCamelCase".'<br>';
 	echo " - Db::getInstance';".'<br>';
 	echo "(ce fichier doit rester en utf-8)".'<br>';
 	exit;
 }
+########### Test du Timer #####################################################
+$myTime = Timer::start();
+//$nbLoops = 50000;while ($nbLoops--) 5164897451*16997134815;
+usleep(100000);// en microsecondes
+echo 'Timer: '.$myTime->stop().'&nbsp;seconde<br>';
+########### Les columnMeta ####################################################
+$db = Db::getInstance();
+$rs = $db->query('SELECT * FROM recipe LIMIT 0');
+$metas = [];
+$i = $rs->columnCount();
+while ( $i-- ) {
+    $meta = $rs->getColumnMeta($i);
+    $name = $meta['name'];
+    unset($meta['name']); unset($meta['table']);
+    $metas[$name] = $meta;
+}
+Utils::debug($metas);
 ###############################################################################
 ###############################################################################
 define ('¶',PHP_EOL);  // Alt+0182
@@ -24,65 +41,48 @@ function getCamelCase($str) {
 }
 $fields = []; $infos = [];
 $db = Db::getInstance();
-$posts  = $db->query('DESC '.$table_name)->fetchAll();
+$rows  = $db->query('DESC '.$table_name)->fetchAll();
+Utils::debug( $rows );
 $max_id_length = 0;
-foreach( $posts as $post ) {
-	$infos[$post['Field']] = '';
-	foreach( $post as $key => $value ) {
+foreach( $rows as $index => $row ) {
+	$infos[$row['Field']] = '';
+	foreach( $row as $key => $value ) {
 		if ($key=='Field') {
 			$fields[] = $value;
 			$max_id_length = max($max_id_length,strlen($value));
 		} else {
-			if(!empty($value)) $infos[$post['Field']] .= $key.':'.$value.', ';
+			if(!empty($value)) $infos[$row['Field']] .= $key.':'.$value.', ';
 		}
 	}
 }
-###############################################################################
+########### RegEx sur types mySQL ############################################
 // "^(((float|decimal|double)(\\([[:digit:]]+,[[:digit:]]+\\))?))$"
 /*
 SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE FROM information_schema.columns;
 DATA_TYPE returns - decimal
 COLUMN_TYPE returns - decimal(5,2)
 */
-$txt = [ 'int(11)', 'int' ];
-$motif = "/
+$arr = [ 'int(11) unsigned', 'int' ];
+$pattern = "/
     ([a-zA-Z\s]+)  # tout caractère entre a-z et A-Z et espaces blancs, au moins une fois
-    \(             # parenthèse ouvrante
+    ([a-zA-Z\s(),]*)            # parenthèse ouvrante
 /x";
-foreach($txt as $str){
-	$arr = explode ('(', $str);
-	//preg_match ($motif , $arr[0], $matches);
-	echo '<b>'.$str.'</b> '.$arr[0].'<br>';
+foreach($arr as $txt){
+	//$arr = explode ('(', $txt);
+	preg_match ($pattern , $txt, $matches);
+	echo '<b>'.$txt.'</b>:<br>';
+	Utils::debug($matches);
 }
 ###############################################################################
-echo <<<EOF
-<pre class="prettyprint lang-php">
-	Publishing:commit/stash/push
-	git commit -m "message"	Commit the local changes that were staged
-	git commit -am "message"	Stage files (modified and deleted, not new) and commit
-	git stash	Take the uncommitted work (modified tracked files and staged changes) and saves it
-	git stash list	Show list of stashes
-	git stash apply	Reapply the latest stashed contents
-	git stash apply <stash id>	Reapply a specific stash. (stash id = stash@{2})
-	git stash drop <stash id>	Drop a specific stash
-	git push	Push your changes to the origin
-	git push origin <local branch name>	Push a branch to the origin
-	git tag <tag name>	Tag a version (ie v1.0). Useful for Github releases.
-</pre>
-EOF;
 echo '<pre class="prettyprint lang-php">';
 //echo '<?php'.¶;
 echo 'class '.$class_name.' {'.¶;
 echo ¶;
 echo '	############ Attributs'.¶;
 echo ¶;
-foreach( $posts as $post ) {
-	foreach( $post as $key => $value ) {
-		if ($key=='Field'){
-			$align = str_repeat( ' ', $max_id_length - strlen($value)+1 );
-echo '	private $'.$value.'; '.$align.' // '.$infos[$value].¶;
-		}
-	}
+foreach( $fields as $field ) {
+	$align = str_repeat( ' ', $max_id_length - strlen($field)+1 );
+echo '	private $'.$field.'; '.$align.' // '.$infos[$field].¶;
 }
 echo ¶;
 echo '	############ Magique'.¶;
@@ -135,53 +135,53 @@ echo '	}'.¶;
 echo ¶;
 echo '	############ Getters'.¶;
 echo ¶;
-foreach( $fields as $key => $value ) {
-	$function_name = Utils::getCamelCase('get'.ucfirst($value));
-	switch ( $posts[$key]['Type'] ) {
+foreach( $fields as $key => $field ) {
+	$function_name = Utils::getCamelCase('get'.ucfirst($field));
+	switch ( $rows[$key]['Type'] ) {
 		case 'datetime':
 echo '	public function '.$function_name.'($format = \'d-m-Y H:i:s\') {'.¶;
 echo '		if (empty($format)) {'.¶;
 echo '			$format = \'Y-m-d H:i:s\';'.¶;
 echo '		}'.¶;
-echo '		return date($format, strtotime($this->'.$value.'));'.¶;
+echo '		return date($format, strtotime($this->'.$field.'));'.¶;
 echo '	}'.¶;
 		break;
 		case 'text':
 echo '	public function '.$function_name.'() {'.¶;
-echo '		return nl2br(htmlspecialchars($this->'.$value.'));'.¶;
+echo '		return nl2br(htmlspecialchars($this->'.$field.'));'.¶;
 echo '	}'.¶;
 		break;
 		default:
 echo '	public function '.$function_name.'(){;'.¶;
-echo '		return $this->'.$value.';'.¶;
+echo '		return $this->'.$field.';'.¶;
 echo '	}'.¶;
 	}
 }
 echo ¶;
 echo '	############ Setters'.¶;
 echo ¶;
-foreach( $fields as $key => $value ) {
-	$function_name = Utils::getCamelCase('set'.ucfirst($value));
-	switch ( $posts[$key]['Type'] ) {
+foreach( $fields as $key => $field ) {
+	$function_name = Utils::getCamelCase('set'.ucfirst($field));
+	switch ( $rows[$key]['Type'] ) {
 		case 'datetime':
-echo '	public function '.$function_name.'($'.$value.') {'.¶;
-echo '		if (strtotime($'.$value.') === false) {'.¶;
+echo '	public function '.$function_name.'($'.$field.') {'.¶;
+echo '		if (strtotime($'.$field.') === false) {'.¶;
 echo '			throw new Exception("Creation date must be valid");'.¶;
 echo '		}'.¶;
-echo '		$this->'.$value.' = $'.$value.';'.¶;
+echo '		$this->'.$field.' = $'.$field.';'.¶;
 echo '	}'.¶;
 		break;
 		case 'text':
-echo '	public function '.$function_name.'($'.$value.') {'.¶;
-echo '		if (empty($'.$value.') || strlen($'.$value.') > 65536) {'.¶;
+echo '	public function '.$function_name.'($'.$field.') {'.¶;
+echo '		if (empty($'.$field.') || strlen($'.$field.') > 65536) {'.¶;
 echo '			throw new Exception("Content cannot be empty and 65536 length max");'.¶;
 echo '		}'.¶;
-echo '		$this->'.$value.' = $'.$value.';'.¶;
+echo '		$this->'.$field.' = $'.$field.';'.¶;
 echo '	}'.¶;
 		break;
 		default:
-echo '	public function '.$function_name.'($'.$value.'){'.¶;
-echo '		$this->'.$value.' = $'.$value.';'.¶;
+echo '	public function '.$function_name.'($'.$field.'){'.¶;
+echo '		$this->'.$field.' = $'.$field.';'.¶;
 echo '	}'.¶;
 	}
 }
@@ -191,4 +191,5 @@ echo '	}'.¶;
 echo '}'.¶;
 echo '</pre>'.¶;
 echo '<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>'.¶;
-###############################################################################
+########### Temsp de fabrication de la page ###################################
+echo "Création de page en ".Timer::pageLoad()." seconde";

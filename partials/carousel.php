@@ -1,10 +1,12 @@
+
 	<div id="myCarousel" class="carousel slide" data-ride="carousel">
 		<ol class="carousel-indicators">
-			<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-			<li data-target="#myCarousel" data-slide-to="1"></li>
-			<li data-target="#myCarousel" data-slide-to="2"></li>
+<?php for($i=0; $i<count($categories); $i++): ?>
+			<li data-target="#myCarousel" data-slide-to="<?= $i ?>"<?= ($i==0?' class="active"':'') ?>></li>
+<?php endfor; ?>
 		</ol>
 		<div class="carousel-inner" role="listbox">
+
 			<div class="item active">
 				<img class="first-slide" src="img/slide-cake.jpg" alt="Les gateaux">
 				<div class="container">
@@ -15,6 +17,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="item">
 				<img class="second-slide" src="img/slide-fast-food.jpg" alt="La fast-food">
 				<div class="container">
@@ -25,6 +28,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="item">
 				<img class="third-slide" src="img/slide-soup.jpg" alt="Les soupes">
 				<div class="container">
@@ -35,6 +39,7 @@
 					</div>
 				</div>
 			</div>
+
 		</div>
 		<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
 			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>

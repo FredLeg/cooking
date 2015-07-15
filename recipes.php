@@ -1,7 +1,6 @@
 <?php
 include_once 'config/config.conf.php';
-$recipes = Recipe::getList('SELECT * FROM recipe');
-
+$recipes    = Recipe::getList('SELECT * FROM recipe');
 
 include_once 'partials/header.php';
 ?>
@@ -31,4 +30,5 @@ include_once 'partials/header.php';
 		<hr>
 <?php endforeach; ?>
 
-<?php include_once 'partials/footer.php'; ?>
+<?php
+include_once 'partials/footer.php';

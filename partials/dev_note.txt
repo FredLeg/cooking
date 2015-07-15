@@ -1,0 +1,4 @@
+
+
+if ( __FILE__ != $_SERVER['SCRIPT_FILENAME'] )
+ne pas servir le fichier

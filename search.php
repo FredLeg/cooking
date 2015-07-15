@@ -1,6 +1,7 @@
 <?php
-include_once 'partials/header.php';
+include_once 'config/config.conf.php';
 
+include_once 'partials/header.php';
 ?>
 		<h1>Recherche</h1>
 
@@ -39,4 +40,5 @@ include_once 'partials/header.php';
 			</div>
 		</form>
 
-<?php include_once 'partials/footer.php'; ?>
+<?php
+include_once 'partials/footer.php';
