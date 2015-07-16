@@ -6,6 +6,7 @@ require_once 'partials/header.php';
 	.bazou {background: lightgrey}
 </style>
 To start, you can always use <b>git help</b> to see a basic list of commands.<br/>
+<b>git version</b> let'you know your git version.<br/>
 <br/>
 <div class="bazou">Git Terminology:</div>
 <b>master</b>	default branch we develop in<br/>

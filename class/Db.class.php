@@ -3,9 +3,9 @@
 class Db extends PDO {
 
 	const ENGINE = 'mysql';
-	const HOST 	 = 'localhost';
+	const HOST   = 'localhost';
 	const USER   = 'root';
-	const PASS   = '';
+	const PASS   = 'josephine';
 	const DB     = 'cooking';
 
 	private static $_db_options = array(
